@@ -31,13 +31,18 @@ jobs:
 
       # Step 4: Terraform Init
       - name: Terraform Init
-        run: terraform init
+        run: |
+          cd Terraform
+          terraform init
 
       # Step 5: Terraform Plan
       - name: Terraform Plan
-        run: terraform plan
-
+        run: |
+          cd Terraform
+          terraform plan
         # Step 6: Terraform Apply
         # Uncomment the next lines to auto-apply changes in a production environment
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: |
+          cd Terraform
+          terraform apply -auto-approve

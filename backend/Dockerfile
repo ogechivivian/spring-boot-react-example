@@ -10,10 +10,8 @@ RUN mvn dependency:go-offline
 COPY src ./src
 
 # Build the Spring Boot application
-#RUN mvn clean package -DskipTests
-RUN mvn clean package
-
-
+RUN mvn clean package -DskipTests
+#RUN mvn clean package
 
 # Runtime Stage: Use a lightweight JDK to run the app
 FROM eclipse-temurin:17-jdk-jammy

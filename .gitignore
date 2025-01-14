@@ -11,3 +11,7 @@ crash.log
 .vscode/
 .idea/
 
+node_modules
+.git
+.idea
+target

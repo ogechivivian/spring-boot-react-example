@@ -1,29 +1,27 @@
-# Stage 1: Build the React App
+#Build with Node
 FROM node:18 AS build
 
-# Create and switch to an app directory in the container
+#needed for Node+OpenSSL issues
+ENV NODE_OPTIONS=--openssl-legacy-provider
+
 WORKDIR /app
 
-# Copy package.json and package-lock.json from the project root (one level up)
-COPY ../../package*.json ./
-
-# Install dependencies
+#Copying the package.json + lock files
+COPY package*.json ./
 RUN npm install
 
-# Copy the React source code from src/main/js
-COPY src/main/js ./
+# Copying the source (including webpack.config.js)
+COPY src ./src
+COPY webpack.config.js ./
 
-# Build the React app
+#Run the build
 RUN npm run build
 
-# Stage 2: Serve the React build with Nginx
+#Serving with Nginx
 FROM nginx:alpine
 
-# Copy the build output from Stage 1
-COPY --from=build /app/build /usr/share/nginx/html
+# Copy final compiled files from build stage
+COPY --from=build /app/target/classes/static/built /usr/share/nginx/html
 
-# Expose port 80
-EXPOSE 80
-
-# Start Nginx
+EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]

@@ -3,8 +3,7 @@ name: Backend CI/CD
 on:
   push:
     paths:
-      - master
-#      - 'backend/**'
+      - 'backend/**'
 
 jobs:
   build-and-deploy:

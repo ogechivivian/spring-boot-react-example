@@ -1,48 +1,48 @@
-name: Terraform Infrastructure Provisioning
-
-on:
-  push:
-    branches:
-      - master
-
-jobs:
-  terraform:
-    name: Terraform Plan and Apply
-    runs-on: ubuntu-latest
-
-    steps:
-      # Step 1: Checkout the repository
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      # Step 2: Configure AWS Credentials
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      # Step 3: Set up Terraform
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.5.0
-
-      # Step 4: Terraform Init
-      - name: Terraform Init
-        run: |
-          cd Terraform
-          terraform init
-
-      # Step 5: Terraform Plan
-      - name: Terraform Plan
-        run: |
-          cd Terraform
-          terraform plan
-        # Step 6: Terraform Apply
-        # Uncomment the next lines to auto-apply changes in a production environment
-      - name: Terraform Apply
-        run: |
-          cd Terraform
-          terraform apply -auto-approve
+#name: Terraform Infrastructure Provisioning
+#
+#on:
+##  push:
+##    branches:
+##      - master
+#
+#jobs:
+#  terraform:
+#    name: Terraform Plan and Apply
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      # Step 1: Checkout the repository
+#      - name: Checkout Code
+#        uses: actions/checkout@v3
+#
+#      # Step 2: Configure AWS Credentials
+#      - name: Configure AWS Credentials
+#        uses: aws-actions/configure-aws-credentials@v2
+#        with:
+#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          aws-region: us-east-1
+#
+#      # Step 3: Set up Terraform
+#      - name: Set up Terraform
+#        uses: hashicorp/setup-terraform@v2
+#        with:
+#          terraform_version: 1.5.0
+#
+#      # Step 4: Terraform Init
+#      - name: Terraform Init
+#        run: |
+#          cd Terraform
+#          terraform init
+#
+#      # Step 5: Terraform Plan
+#      - name: Terraform Plan
+#        run: |
+#          cd Terraform
+#          terraform plan
+#        # Step 6: Terraform Apply
+#        # Uncomment the next lines to auto-apply changes in a production environment
+#      - name: Terraform Apply
+#        run: |
+#          cd Terraform
+#          terraform apply -auto-approve

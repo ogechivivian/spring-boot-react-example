@@ -1,28 +1,28 @@
-name: Frontend Deployment
-
-on:
-  push:
-    paths:
-      - "frontend/**"
-
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Build React App
-        run: |
-          cd frontend
-          npm install
-          npm run build
-
-      - name: Upload to S3
-        run: |
-          aws s3 sync build/ s3://$FRONTEND_BUCKET --delete
-
-      - name: Invalidate CloudFront Cache
-        run: |
-          aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DIST_ID --paths "/*"
+#name: Frontend Deployment
+#
+#on:
+#  push:
+#    paths:
+#      - "frontend/**"
+#
+#jobs:
+#  build-and-deploy:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Checkout Code
+#        uses: actions/checkout@v3
+#
+#      - name: Build React App
+#        run: |
+#          cd frontend
+#          npm install
+#          npm run build
+#
+#      - name: Upload to S3
+#        run: |
+#          aws s3 sync build/ s3://$FRONTEND_BUCKET --delete
+#
+#      - name: Invalidate CloudFront Cache
+#        run: |
+#          aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DIST_ID --paths "/*"

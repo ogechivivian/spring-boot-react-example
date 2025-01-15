@@ -1,9 +1,7 @@
 # Build Stage: Use Maven to build the backend
 FROM maven:3.9.4-eclipse-temurin-17 AS build
-
 # Set working directory
 WORKDIR /app
-
 # Copy Maven configuration and source files
 COPY pom.xml .
 RUN mvn dependency:go-offline

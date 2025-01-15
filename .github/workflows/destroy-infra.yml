@@ -1,0 +1,51 @@
+name: Terraform Destroy
+
+on:
+  workflow_dispatch:  # Allows manual triggering of the workflow
+  push:
+    branches:
+      - main
+    paths:
+      - 'terraform/**'
+
+jobs:
+  terraform-destroy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      # Step 1: Checkout Repository
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Step 2: Setup Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.5.0
+
+      # Step 3: Configure AWS Credentials (if using AWS)
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      # Step 4: Initialize Terraform
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./terraform
+
+      # Step 5: Terraform Destroy Plan
+      - name: Terraform Destroy Plan
+        run: terraform plan -destroy -no-color -input=false
+        working-directory: ./terraform
+
+      # Step 6: Terraform Destroy
+      - name: Terraform Destroy
+        run: terraform destroy -auto-approve -no-color -input=false
+        working-directory: ./terraform

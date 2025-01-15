@@ -1,9 +1,10 @@
 terraform {
+  required_version = ">= 1.3.0"
   backend "s3" {
-    bucket         = "ogechi-test-bucket"
-    key            = "terraform.tfstate"
-    region         = "us-east-1" # Replace with your bucket's region
-    encrypt        = true
+    bucket  = "ogechi-test-bucket"
+    key     = "terraform.tfstate"
+    region  = "us-east-1"
+    encrypt = true
   }
 }
 

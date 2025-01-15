@@ -33,7 +33,7 @@ jobs:
         id: fmt
         run: |
           cd terraform
-          terraform fmt -check
+          terraform fmt -check -recursive 
 
       - name: Terraform Init
         id: init

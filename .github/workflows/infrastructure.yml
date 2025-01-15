@@ -60,7 +60,6 @@ jobs:
         run: |
           cd terraform
           terraform plan -no-color -input=false | tee tfplan.txt
-        working-directory: ./terraform
         env:
           PLAN_OUTPUT: ${{ steps.plan.outputs.stdout }}
 
@@ -106,6 +105,7 @@ jobs:
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-        run: terraform apply -auto-approve -input=false
-        working-directory: ./terraform
+        run: |
+          cd terraform
+          terraform apply -auto-approve -input=false
 

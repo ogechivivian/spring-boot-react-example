@@ -1,5 +1,4 @@
 name: "Terraform"
-
 on:
   push:
     branches:
@@ -7,7 +6,8 @@ on:
     paths:
       - 'terraform/**'
   pull_request:
-    - master
+    branches:
+      - master
 
 jobs:
   terraform:

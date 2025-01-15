@@ -10,6 +10,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
+
 # Copying the source (including webpack.config.js)
 COPY src ./src
 COPY webpack.config.js ./

@@ -1,4 +1,5 @@
-name: "Terraform"
+name: Terraform
+
 on:
   push:
     branches:
@@ -15,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -22,7 +24,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
-           terraform_version: 0.13.0
+          terraform_version: 0.13.0
 
       - name: Terraform Format
         id: fmt
@@ -39,37 +41,45 @@ jobs:
       - name: Terraform Plan
         id: plan
         if: github.event_name == 'pull_request'
-        run: terraform plan -no-color -input=false
-        continue-on-error: true
+        run: |
+          terraform plan -no-color -input=false | tee tfplan.txt
+        env:
+          PLAN_OUTPUT: ${{ steps.plan.outputs.stdout }}
 
       - name: Update Pull Request
         uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
-        env:
-          PLAN: ${{ steps.plan.outputs.stdout }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
-            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+            const fmtOutcome = `Terraform Format: \`${{ steps.fmt.outcome }}\``
+            const initOutcome = `Terraform Init: \`${{ steps.init.outcome }}\``
+            const validateOutcome = `Terraform Validate: \`${{ steps.validate.outcome }}\``
+            const planOutput = process.env.PLAN_OUTPUT || 'Terraform Plan output not available.'
+            const planOutcome = `Terraform Plan: \`${{ steps.plan.outcome }}\``
 
-            <details><summary>Show Plan</summary>
+            const body = `
+            ### Terraform Workflow Results:
+            ${fmtOutcome}
+            ${initOutcome}
+            ${validateOutcome}
+            ${planOutcome}
 
-            \`\`\`terraform\n
-            ${process.env.PLAN}
+            <details><summary>Terraform Plan Output</summary>
+
+            \`\`\`terraform
+            ${planOutput}
             \`\`\`
 
             </details>
-
-            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
-
+            Pushed by: @${{ github.actor }}
+            Action: \`${{ github.event_name }}\`
+            `
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: output
+              body
             })
 
       - name: Terraform Plan Status
@@ -79,51 +89,3 @@ jobs:
       - name: Terraform Apply
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
         run: terraform apply -auto-approve -input=false
-#name: Terraform Infrastructure Provisioning
-#
-#on:
-#  push:
-#    branches:
-#      - 'Terraform/**'
-#
-#jobs:
-#  terraform:
-#    name: Terraform Plan and Apply
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      # Step 1: Checkout the repository
-#      - name: Checkout Code
-#        uses: actions/checkout@v3
-#
-#      # Step 2: Configure AWS Credentials
-#      - name: Configure AWS Credentials
-#        uses: aws-actions/configure-aws-credentials@v2
-#        with:
-#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          aws-region: us-east-1
-#
-#      # Step 3: Set up Terraform
-#      - name: Set up Terraform
-#        uses: hashicorp/setup-terraform@v2
-#        with:
-#          terraform_version: 1.5.0
-#
-#      # Step 4: Terraform Init
-#      - name: Terraform Init
-#        run: |
-#          cd Terraform
-#          terraform init
-#
-#      # Step 5: Terraform Plan
-#      - name: Terraform Plan
-#        run: |
-#          cd Terraform
-#          terraform plan
-#        # Step 6: Terraform Apply
-#        # Uncomment the next lines to auto-apply changes in a production environment
-#      - name: Terraform Apply
-#        run: |
-#          cd Terraform
-#          terraform apply -auto-approve

@@ -27,13 +27,19 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: 1.4.0
+          terraform_version: 1.4.2
 
       - name: Terraform Format
         id: fmt
         run: |
           cd terraform
-          terraform fmt -check -recursive 
+          terraform fmt -check -recursive
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+         aws-region: us-east-1
 
       - name: Terraform Init
         id: init

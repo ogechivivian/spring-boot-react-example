@@ -11,6 +11,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 #RUN mvn clean package
 
+
 # Runtime Stage: Use a lightweight JDK to run the app
 FROM eclipse-temurin:17-jdk-jammy
 

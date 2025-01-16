@@ -6,7 +6,7 @@ on:
       - "frontend/**"
 
 jobs:
-  build-and-deploy:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,12 +24,7 @@ jobs:
           npm install
           export NODE_OPTIONS=--openssl-legacy-provider
           npm run build
-#- name: Install and Build
-#  run: |
-#    npm install
-#    export NODE_OPTIONS=--openssl-legacy-provider
-#    npm run build
-##
+
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
@@ -42,10 +37,51 @@ jobs:
 #       Push the Docker image
       - name: Push Docker image
         run: docker push docker.io/${{ secrets.DOCKER_USERNAME }}/my-frontend:latest
-#      - name: Upload to S3
-#        run: |
-#          aws s3 sync build/ s3://$FRONTEND_BUCKET --delete
-#
-#      - name: Invalidate CloudFront Cache
-#        run: |
-#          aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DIST_ID --paths "/*"
+  deploy-to-eks:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Configure AWS credentials
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # Install kubectl
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
+
+      # Update kubeconfig to connect to EKS
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
+
+      #  Deploy to EKS
+      - name: Deploy to EKS
+        run: |
+          # Set image tag variable
+          IMAGE_TAG=${{ github.sha }}
+          # Apply Deployment and Service manifests
+          kubectl apply -f k8s/Development/frontend-deployment.yaml
+          kubectl apply -f k8s/Development/frontend-service.yaml
+          kubectl apply -f k8s/Development/frontend-hpa.yaml
+          
+          # Update the image in the deployment
+          kubectl set image deployment/frontend-deployment frontend=docker.io/${{ secrets.DOCKER_USERNAME }}/my-frontend:${IMAGE_TAG}
+          
+          # Wait for the deployment to complete
+          kubectl rollout status deployment/frontend-deployment
+      - name: Apply HPA for Frontend
+        run: |
+          kubectl apply -f k8s/Development/frontend-hpa.yaml
+
+

@@ -17,17 +17,17 @@ jobs:
       pull-requests: write
 
     steps:
-      # Step 1: Checkout Repository
+      # Checkout Repository
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # Step 2: Setup Terraform
+      # Setup Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: 1.5.0
+          terraform_version: 1.4.2
 
-      # Step 3: Configure AWS Credentials (if using AWS)
+      # Configure AWS Credentials (if using AWS)
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -35,17 +35,20 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      # Step 4: Initialize Terraform
+      # Initialize Terraform
       - name: Terraform Init
-        run: terraform init
-        working-directory: ./terraform
+        run: |
+          cd terraform
+          terraform init
 
-      # Step 5: Terraform Destroy Plan
+      # Terraform Destroy Plan
       - name: Terraform Destroy Plan
-        run: terraform plan -destroy -no-color -input=false
-        working-directory: ./terraform
+        run: |
+          cd terraform
+          terraform plan -destroy -no-color -input=false
 
-      # Step 6: Terraform Destroy
+      # Terraform Destroy
       - name: Terraform Destroy
-        run: terraform destroy -auto-approve -no-color -input=false
-        working-directory: ./terraform
+        run: |
+          cd terraform
+          terraform destroy -auto-approve -no-color -input=false

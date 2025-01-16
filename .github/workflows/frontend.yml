@@ -70,6 +70,10 @@ jobs:
         run: |
           # Set image tag variable
           IMAGE_TAG=${{ github.sha }}
+          # Apply Deployment and Service manifests
+          kubectl apply -f k8s/Development/frontend-deployment.yaml
+          kubectl apply -f k8s/Development/frontend-service.yaml
+          kubectl apply -f k8s/Development/frontend-hpa.yaml
           
           # Update the image in the deployment
           kubectl set image deployment/frontend-deployment frontend=docker.io/${{ secrets.DOCKER_USERNAME }}/my-frontend:${IMAGE_TAG}

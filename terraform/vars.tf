@@ -4,6 +4,12 @@ variable "region" {
   default     = "us-east-1"
 }
 
+variable "ami_type" {
+  description = "AMI type"
+  type        = string
+  default     = "AL2_x86_64"
+}
+
 
 variable "az_count" {
   description = "The number of Availability zones needed."

@@ -53,7 +53,7 @@ module "eks" {
   subnet_ids = module.vpc.private_subnets
 
   eks_managed_node_group_defaults = {
-    ami_type = "AL2_x86_64"
+    ami_type = var.ami_type
 
   }
 
@@ -63,9 +63,9 @@ module "eks" {
 
       instance_types = ["t3.small"]
 
-      min_size     = 1
-      max_size     = 3
-      desired_size = 2
+      min_size     = var.scaling_min_size
+      max_size     = var.scaling_max_size
+      desired_size = var.scaling_desired_size
     }
 
     two = {
@@ -73,9 +73,9 @@ module "eks" {
 
       instance_types = ["t3.small"]
 
-      min_size     = 1
-      max_size     = 2
-      desired_size = 1
+      min_size     = var.scaling_min_size
+      max_size     = var.scaling_max_size
+      desired_size = var.scaling_desired_size
     }
     cluster_logging = {
       api              = true

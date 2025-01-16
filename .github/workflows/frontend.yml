@@ -33,10 +33,15 @@ jobs:
         run: |
           docker build -t my-frontend:latest ./frontend
           docker tag my-frontend:latest docker.io/${{ secrets.DOCKER_USERNAME }}/my-frontend:latest
+          docker tag my-frontend:latest docker.io/${{ secrets.DOCKER_USERNAME }}/my-frontend:${{ github.sha }}
+      
 
-#       Push the Docker image
+      #       Push the Docker image
       - name: Push Docker image
-        run: docker push docker.io/${{ secrets.DOCKER_USERNAME }}/my-frontend:latest
+        run: |
+          docker push docker.io/${{ secrets.DOCKER_USERNAME }}/my-frontend:latest
+          docker push docker.io/${{ secrets.DOCKER_USERNAME }}/my-frontend:${{ github.sha }}
+
   deploy-to-eks:
     needs: build-and-push
     runs-on: ubuntu-latest

@@ -4,6 +4,7 @@ variable "region" {
   default     = "us-east-1"
 }
 
+
 variable "az_count" {
   description = "The number of Availability zones needed."
   type        = number
@@ -25,7 +26,7 @@ variable "subnet_cidr_bits" {
 variable "cluster_name" {
   description = "The Cluster name."
   type        = string
-  default     = "EKS_Cluster"
+  default     = "EKS_Cluster-test"
 }
 
 variable "instance_types" {
@@ -68,4 +69,9 @@ variable "public_access_cidrs" {
   description = "CIDR block range for vpc"
   type        = string
   default     = "0.0.0.0/0"
+}
+
+variable "usernames" {
+  type    = list(string)
+  default = ["test", "test2"]
 }

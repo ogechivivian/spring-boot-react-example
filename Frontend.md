@@ -20,6 +20,7 @@
 │   └── workflows
 │       └── frontend.yml
 └── README.md
+```
 
 # Frontend Project Documentation
 
@@ -48,7 +49,7 @@ To ensure secure and flexible deployments, the workflow utilizes **GitHub Secret
 ```bash
 git clone https://github.com/your-username/your-repo.git
 cd your-repo
-
+```
 ## Configure GitHub Secrets:
 
 Navigate to your repository on GitHub and add the required secrets under Settings > Secrets and variables > Actions.
@@ -62,6 +63,7 @@ Copy code
 git add frontend/
 git commit -m "Update frontend application"
 git push origin main
+```
 ## Monitor the Workflow:
 
 Go to the Actions tab in your GitHub repository to monitor the build and deployment process.
@@ -79,13 +81,14 @@ If you want to build and run the Docker image locally:
 Copy code
 cd frontend
 Build the Docker Image:
-
+```
 ```bash
 Copy code
 docker build -t my-frontend:latest .
 Run the Docker Container:
-
-bash
+```
+```bash
 Copy code
 docker run -p 8080:8080 my-frontend:latest
+```
 Access the application at http://localhost:8080.
